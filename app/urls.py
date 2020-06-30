@@ -10,14 +10,10 @@ urlpatterns = [
     path('login/', views.login.as_view(), name='login'),
     path('logout/', views.logout.as_view()),
     path('upload-post/', views.createPostView.as_view()),
-    path('get-posts/', views.listPostsView.as_view())
-    # path('register/', views.register, name='register'),
-    # path('upload-post/', views.make_a_post, name='post'),
-    # path('posts-list/', views.return_posts, name='posts_list'),
-    # path('get-user-feed/', views.get_posts, name='get_posts'),
-    # path('upload-story/', views.make_a_story, name='story'),
-    # path('get-stories/', views.get_stories, name='get_stories'),
-    # path('like/', views.like, name='like'),
-    # path('comment/', views.comment, name='comment'),
-    # path('get-comments/', views.get_comments_to_object, name='get-comments')
+    path('get-posts/', views.listPostsView.as_view()),
+    path('upload-story/', views.CreateStoryApiView.as_view()),
+    path('get-storyes/', views.ListStoryApiView.as_view()),
+    path('like/', views.LikeCreateApiView.as_view()),
+    path('unlike/<int:pk>', views.UnLikeAPIView.as_view()),
+    path('comment/', views.CommentCreateApiView.as_view())
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

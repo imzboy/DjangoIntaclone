@@ -1,14 +1,20 @@
 from django.contrib.auth.models import User
 
 from django.core.files.images import get_image_dimensions
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image
+
+import io
+import sys
 
 from rest_framework import serializers
 
 from app.models import (
     Post,
-    Story
+    Story,
+    Like,
+    Comment
     )
 
 class UserSerializer(serializers.Serializer):
@@ -27,22 +33,51 @@ class PostSerializer(serializers.ModelSerializer):
             'upload_date']
         read_only_fields = ['id', 'author_id', 'likes', 'upload_date']
 
+    # EXTRA TASK
     def validate_img(self, value):
-        img = Image.open(value)
-        if img.size[0] > 1000 or img.size[1] > 1000:
-            img = img.resize((1000, 1000))
-            Image.Image.save(img, "media\post_pics\\"+str(img.name[10:]))
+        image = Image.open(value)
+        if image.size[0] > 1000 or image.size[1] > 1000:
+            image = image.resize((1000, 1000), Image.ANTIALIAS)
+            output = io.BytesIO()
+            image.save(output, format='JPEG', quality=85)
+            output.seek(0)
+            return InMemoryUploadedFile(output, 'ImageField',
+                                        value.name,
+                                        'image/jpeg',
+                                        sys.getsizeof(output), None)
         return value
 
 
 class StorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Story
-        fields = ['id', 'author_id', 'img', 'upload_date']
-        read_only_fields = ['id', 'upload_date']
+        fields = ['id', 'author_id', 'img', 'upload_date', 'expier_date']
+        read_only_fields = ['id', 'author_id', 'upload_date', 'expier_date']
 
+    # EXTRA TASK
     def validate_img(self, value):
-        # width, height = get_image_dimensions(value)
-        # if width > 1000: width = 1000
-        # if height > 1000: height = 1000
+        image = Image.open(value)
+        if image.size[0] > 1000 or image.size[1] > 1000:
+            image = image.resize((1000, 1000), Image.ANTIALIAS)
+            output = io.BytesIO()
+            image.save(output, format='JPEG', quality=85)
+            output.seek(0)
+            return InMemoryUploadedFile(output, 'ImageField',
+                                        value.name,
+                                        'image/jpeg',
+                                        sys.getsizeof(output), None)
         return value
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['id', 'author_id', 'attach_object_id']
+        read_only_fields = ['id', 'author_id']
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'object_to_attach_id',
+                  'author_id', 'comment', 'upload_date', 'likes']
+        read_only_fields = ['id', 'author_id', 'upload_date', 'likes']

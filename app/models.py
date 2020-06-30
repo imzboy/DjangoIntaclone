@@ -1,16 +1,6 @@
 from django.db import models
+from model_utils.models import TimeFramedModel
 import datetime
-
-class User(models.Model):
-    """A User model.
-       Has a username, hashed password, salt for the password and an
-       access token in exchange for user credentials"""
-    id = models.AutoField(primary_key=True)
-    username = models.TextField(unique=True, max_length=50)
-    password = models.BinaryField()
-    salt = models.BinaryField()
-    token = models.TextField(unique=True)
-
 
 class Post(models.Model):
     """A Post model.
@@ -31,7 +21,7 @@ class Story(models.Model):
     img = models.ImageField(upload_to='post_pics')
     upload_date = models.DateTimeField(auto_now_add=True)
     expier_date = models.DateTimeField(
-       auto_now=datetime.datetime.now() + datetime.timedelta(hours=24))
+       default=datetime.datetime.now() + datetime.timedelta(hours=24))
 
 
 class Comment(models.Model):
@@ -47,6 +37,5 @@ class Comment(models.Model):
 class Like(models.Model):
     """A like model for comments and posts
        Can be attached via attach_object_id to a comment or a post"""
-    id = models.TextField(primary_key=True)
-    author = models.TextField(max_length=50)
+    author_id = models.TextField(max_length=50)
     attach_object_id = models.TextField()
