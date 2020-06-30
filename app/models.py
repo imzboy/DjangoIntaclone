@@ -1,4 +1,5 @@
 from django.db import models
+import datetime
 
 class User(models.Model):
     """A User model.
@@ -15,30 +16,28 @@ class Post(models.Model):
     """A Post model.
        Has an author id, image, description, likes count, upload date
        and a views list for checking what user already seen this post"""
-    id = models.TextField(primary_key=True)
     author_id = models.IntegerField()
     img = models.ImageField(upload_to='post_pics')
     description = models.TextField(max_length=280, default='')
     likes = models.IntegerField(default=0)
     upload_date = models.DateField(auto_now_add=True)
-    views_list = models.TextField(default='')
 
 
 class Story(models.Model):
     """A story model.
        Has a author id, image and a upload_date.
        If a story is older than 24 hrs it gets deleted"""
-    id = models.TextField(primary_key=True)
     author_id = models.IntegerField()
     img = models.ImageField(upload_to='post_pics')
     upload_date = models.DateTimeField(auto_now_add=True)
+    expier_date = models.DateTimeField(
+       auto_now=datetime.datetime.now() + datetime.timedelta(hours=24))
 
 
 class Comment(models.Model):
     """A comment model for comment on posts
        object_to_attach_id is an id of another comment or post object
        that this object will be attached to, creating a comment tree"""
-    id = models.TextField(primary_key=True)
     object_to_attach_id = models.TextField()
     author_id = models.IntegerField()
     comment = models.TextField(max_length=140)
